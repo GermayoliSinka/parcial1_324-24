@@ -1,0 +1,19 @@
+-- Obtener la lista de personas por tipo de impuesto
+SELECT *
+FROM (
+    SELECT 
+        u.nombre AS Nombre,
+        u.paterno AS ApellidoPaterno,
+        u.materno AS ApellidoMaterno,
+        CASE 
+            WHEN LEFT(p.cod_catastro, 1) = '1' THEN 'Alto'
+            WHEN LEFT(p.cod_catastro, 1) = '2' THEN 'Medio'
+            WHEN LEFT(p.cod_catastro, 1) = '3' THEN 'Bajo'
+        END AS TipoImpuesto
+    FROM usuario u
+    JOIN propiedad p ON u.ci = p.ci_propietario
+) AS SourceTable
+PIVOT (
+    COUNT(Nombre) 
+    FOR TipoImpuesto IN ([Alto], [Medio], [Bajo])
+) AS PivotTable;
